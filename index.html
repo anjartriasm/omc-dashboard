@@ -1,26 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OMC Dashboard</title>
-  
-  
-  
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OMC Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    
+    <script>
+        const login = () => {
+            if (typeof google === 'undefined') {
+                // auto-login logic here
+            }
+        };
+    </script>
 </head>
 <body>
-  
-  
-  
-    setTimeout(function() {
-      // Auto-login hanya untuk environment non-GAS (development/local)
-      // Di GAS: user harus login manual
-      if (typeof google === 'undefined' || !google.script) {
-        login();
-      }
-      
-      const navDetail2 = document.getElementById('navDetail2');
-  
-  
+    <header>
+        <h1>Welcome to OMC Dashboard</h1>
+    </header>
+    <main>
+        <button onclick="login()">Login</button>
+    </main>
 </body>
 </html>
