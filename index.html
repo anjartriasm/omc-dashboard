@@ -9,7 +9,7 @@
   <base target="_top">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   
@@ -60,6 +60,8 @@
       display: flex;
       overflow: hidden;
       height: 100vh;
+      margin: 0;
+      padding: 0;
     }
 
     /* ========== SIDEBAR ========== */
@@ -264,14 +266,16 @@
       color: var(--primary);
     }
 
-    /* ========== CONTENT AREA ========== */
-    .content-area {
+    /* ========== MAIN CONTENT AREA ========== */
+    .main-content {
       flex-grow: 1;
       overflow-y: auto;
+      height: calc(100vh - 64px);
       padding: 24px;
       display: flex;
       flex-direction: column;
       gap: 24px;
+      position: relative;
     }
 
     .breadcrumb {
@@ -432,12 +436,17 @@
       display: flex;
       gap: 12px;
       align-items: center;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       background: white;
-      padding: 16px;
-      border-radius: 12px;
+      padding: 12px 16px;
+      border-radius: 8px;
       box-shadow: var(--shadow-sm);
-      margin-bottom: 8px;
+      margin-bottom: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      border: 1px solid #e2e8f0;
+      overflow-x: auto;
     }
 
     .filter-bar select, .filter-bar input {
@@ -674,14 +683,21 @@
     }
 
     /* ========== TABLE STYLING ========== */
+    .table-responsive {
+      overflow-x: auto;
+      width: 100%;
+      border: 1px solid #e5e5e5;
+      border-radius: 8px;
+      background: white;
+      box-shadow: var(--shadow-sm);
+    }
+
     .table-container {
       background: white;
       border-radius: 12px;
-      box-shadow: var(--shadow-sm);
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      border: 1px solid rgba(0,0,0,0.05);
     }
 
     .table-header-blue {
@@ -696,6 +712,8 @@
       width: 100%;
       border-collapse: collapse;
       font-size: var(--fs-sm);
+      table-layout: auto;
+      min-width: 1000px;
     }
 
     #mainTable thead, #mainTable2 thead {
@@ -1293,7 +1311,7 @@
         <input type="text" id="user" placeholder="Username" />
         <input type="password" id="pass" placeholder="Password" />
         <div id="loginError"></div>
-        <button onclick="login()">Login</button>
+        <button id="loginBtn">Login</button>
         <span class="login-footer">#Created by RAN Analyst</span>
       </div>
     </div>
@@ -1301,7 +1319,7 @@
 
   <!-- ========== SIDEBAR ========== -->
   <div id="sidebar">
-    <div class="sidebar-toggle" onclick="toggleSidebar()">
+    <div class="sidebar-toggle" id="sidebarToggle">
       <i class="fa fa-chevron-left"></i>
     </div>
     <div class="sidebar-logo">
@@ -1310,38 +1328,38 @@
     </div>
 
     <div class="nav-group">
-      <div class="nav-item" id="navSum" onclick="showPage('summary')">
+      <div class="nav-item" id="navSum" data-page="summary">
         <i class="fa fa-home"></i><span>Dashboard</span>
       </div>
-      <div class="nav-item" onclick="toggleSubmenu(this)">
+      <div class="nav-item nav-submenu-toggle">
         <i class="fa fa-ticket-alt"></i><span>Ticketing Handling</span>
       </div>
       <div class="nav-submenu">
-        <div class="nav-item" onclick="showPage('summary')">
+        <div class="nav-item" data-page="summary">
           <i class="fa fa-chevron-right" style="font-size:10px"></i><span>Fault Center</span>
         </div>
-        <div class="nav-item" id="navDet" onclick="showPage('detail')">
+        <div class="nav-item" id="navDet" data-page="detail">
           <i class="fa fa-chevron-right" style="font-size:10px"></i><span>Ticket Tracking</span>
         </div>
-        <div class="nav-item" id="navDetail2" onclick="showPage('detail2')">
+        <div class="nav-item" id="navDetail2" data-page="detail2">
           <i class="fa fa-chevron-right" style="font-size:10px"></i><span>Dashboard Enom 2</span>
         </div>
       </div>
-      <div class="nav-item" onclick="toggleSubmenu(this)">
+      <div class="nav-item nav-submenu-toggle">
         <i class="fa fa-chart-line"></i><span>Performance</span>
       </div>
-      <div class="nav-item" onclick="toggleSubmenu(this)">
+      <div class="nav-item nav-submenu-toggle">
         <i class="fa fa-desktop"></i><span>Dashboard Tracking</span>
       </div>
       <div class="nav-submenu">
-        <div class="nav-item" id="navChart" onclick="showPage('chart')">
+        <div class="nav-item" id="navChart" data-page="chart">
           <i class="fa fa-chevron-right" style="font-size:10px"></i><span>Analytics</span>
         </div>
       </div>
     </div>
 
     <div style="margin-top: auto; padding: 12px;">
-      <div class="nav-item" onclick="logout()">
+      <div class="nav-item" id="logoutBtn">
         <i class="fa fa-sign-out-alt"></i><span>Logout</span>
       </div>
     </div>
@@ -1370,7 +1388,7 @@
       </div>
     </div>
 
-    <div class="content-area">
+    <div class="main-content">
       <!-- BREADCRUMBS & PAGE HEADER -->
       <div class="page-header">
         <div class="breadcrumb">
@@ -1384,9 +1402,11 @@
       <!-- SUMMARY PAGE -->
       <div id="summaryPage" class="page-section">
         <div class="filter-bar">
-          <select id="filterNOP_Sum" onchange="resetAndFilterSum()"><option value="">-- REGIONAL 5 --</option></select>
-          <input type="text" id="searchInputSum" placeholder="Search Summary..." onkeyup="handleGlobalSearchSum()">
-          <button class="capture-btn" onclick="captureSummaryFull(event)" style="background: #8b5cf6;"><i class="fa fa-camera"></i> Capture</button>
+          <select id="filterNOP_Sum"><option value="">-- REGIONAL 5 --</option></select>
+          <select id="filterStatus_Sum"><option value="">-- All Status --</option></select>
+          <select id="filterDate_Sum"><option value="">-- All Date --</option></select>
+          <input type="text" id="searchInputSum" placeholder="Search Summary...">
+          <button class="capture-btn" id="captureSummaryBtn" style="background: #8b5cf6;"><i class="fa fa-camera"></i> Capture</button>
         </div>
 
         <div class="score-cards-row">
@@ -1449,9 +1469,11 @@
       <!-- DETAIL PAGE -->
       <div id="detailPage" class="page-section">
         <div class="filter-bar">
-          <select id="filterNOP" onchange="resetAndFilter()"><option value="">-- REGIONAL 5 --</option></select>
-          <input type="text" id="searchInput" onkeyup="handleGlobalSearch()" placeholder="Search Ticket Tracking...">
-          <button class="capture-btn" onclick="captureDetailFull(event)" style="background: #8b5cf6;"><i class="fa fa-camera"></i> Capture</button>
+          <select id="filterNOP"><option value="">-- REGIONAL 5 --</option></select>
+          <select id="filterStatus"><option value="">-- All Status --</option></select>
+          <select id="filterDate"><option value="">-- All Date --</option></select>
+          <input type="text" id="searchInput" placeholder="Search Ticket Tracking...">
+          <button class="capture-btn" id="captureDetailBtn" style="background: #8b5cf6;"><i class="fa fa-camera"></i> Capture</button>
         </div>
 
         <div class="score-cards-row">
@@ -1487,7 +1509,7 @@
 
         <div class="card-panel" style="padding: 0; overflow: hidden;">
           <div class="table-header-blue">List Ticket INAP</div>
-          <div style="overflow:auto; flex:1">
+          <div class="table-responsive">
             <table id="mainTable">
               <thead id="tableHead"></thead>
               <tbody id="tableBody"></tbody>
@@ -1496,9 +1518,9 @@
           <div style="padding:16px; border-top:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center">
             <span id="rowsInfo" style="font-size:12px; color:var(--text-secondary); font-weight:600;"></span>
             <div class="pagination">
-              <button onclick="prevPage()">← Prev</button>
-              <span style="font-size:12px;">Page <input type="number" id="pageInput" value="1" onchange="goToPage(this.value)" style="width:40px; text-align:center"> of <span id="totalPages">1</span></span>
-              <button onclick="nextPage()">Next →</button>
+              <button id="prevPageBtn">← Prev</button>
+              <span style="font-size:12px;">Page <input type="number" id="pageInput" value="1" style="width:40px; text-align:center"> of <span id="totalPages">1</span></span>
+              <button id="nextPageBtn">Next →</button>
             </div>
           </div>
         </div>
@@ -1507,9 +1529,11 @@
       <!-- DETAIL PAGE 2 -->
       <div id="detail2Page" class="page-section">
         <div class="filter-bar">
-          <select id="filterNOP2" onchange="resetAndFilter2()"><option value="">-- REGIONAL 5 --</option></select>
-          <input type="text" id="searchInput2" placeholder="Search Dashboard Enom 2..." onkeyup="handleGlobalSearch2()">
-          <button class="capture-btn" onclick="captureDetailFull2(event)" style="background: #8b5cf6;"><i class="fa fa-camera"></i> Capture</button>
+          <select id="filterNOP2"><option value="">-- REGIONAL 5 --</option></select>
+          <select id="filterStatus2"><option value="">-- All Status --</option></select>
+          <select id="filterDate2"><option value="">-- All Date --</option></select>
+          <input type="text" id="searchInput2" placeholder="Search Dashboard Enom 2...">
+          <button class="capture-btn" id="captureDetail2Btn" style="background: #8b5cf6;"><i class="fa fa-camera"></i> Capture</button>
         </div>
 
         <div class="score-cards-row">
@@ -1545,7 +1569,7 @@
 
         <div class="card-panel" style="padding: 0; overflow: hidden;">
           <div class="table-header-blue">Dashboard Enom 2</div>
-          <div style="overflow:auto; flex:1">
+          <div class="table-responsive">
             <table id="mainTable2">
               <thead id="tableHead2"></thead>
               <tbody id="tableBody2"></tbody>
@@ -1554,9 +1578,9 @@
           <div style="padding:16px; border-top:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center">
             <span id="rowsInfo2" style="font-size:12px; color:var(--text-secondary); font-weight:600;"></span>
             <div class="pagination">
-              <button onclick="prevPage2()">← Prev</button>
-              <span style="font-size:12px;">Page <input type="number" id="pageInput2" value="1" onchange="goToPage2(this.value)" style="width:40px; text-align:center"> of <span id="totalPages2">1</span></span>
-              <button onclick="nextPage2()">Next →</button>
+              <button id="prevPageBtn2">← Prev</button>
+              <span style="font-size:12px;">Page <input type="number" id="pageInput2" value="1" style="width:40px; text-align:center"> of <span id="totalPages2">1</span></span>
+              <button id="nextPageBtn2">Next →</button>
             </div>
           </div>
         </div>
@@ -1565,11 +1589,11 @@
       <!-- CHART PAGE -->
       <div id="chartPage" class="page-section">
         <div class="filter-bar">
-          <select id="chartFilterType" onchange="updateChartFilters()"><option value="">Type Ticket</option></select>
-          <select id="chartFilterNop" onchange="updateChartFilters()"><option value="">NOP</option></select>
-          <select id="chartFilterSeverity" onchange="updateChartFilters()"><option value="">Severity</option></select>
-          <select id="chartFilterStatus" onchange="updateChartFilters()"><option value="">Status</option></select>
-          <button class="btn-primary" onclick="resetChartFilters()" style="padding: 8px 16px; border-radius:8px; border:1px solid #e2e8f0; background:white; font-weight:600">Reset</button>
+          <select id="chartFilterType"><option value="">Type Ticket</option></select>
+          <select id="chartFilterNop"><option value="">NOP</option></select>
+          <select id="chartFilterSeverity"><option value="">Severity</option></select>
+          <select id="chartFilterStatus"><option value="">Status</option></select>
+          <button class="btn-primary" id="resetChartFiltersBtn" style="padding: 8px 16px; border-radius:8px; border:1px solid #e2e8f0; background:white; font-weight:600">Reset</button>
         </div>
 
         <div class="charts-grid">
@@ -1781,7 +1805,7 @@
       if (el) el.innerHTML = html;
     }
 
-    function login() {
+    window.login = function() {
       const u = document.getElementById("user").value;
       const p = document.getElementById("pass").value;
       const err = document.getElementById("loginError");
@@ -1819,14 +1843,14 @@
         .checkLogin({ username: u, password: p });
     }
 
-    function logout() {
+    window.logout = function() {
       console.log("🔴 LOGOUT - Clearing interval");
       if (State.timerInterval) clearInterval(State.timerInterval);
       window.location.reload();
     }
 
     // ========== NAVIGATION ==========
-    function toggleSidebar() {
+    window.toggleSidebar = function() {
       const sidebar = document.getElementById('sidebar');
       sidebar.classList.toggle('collapsed');
       
@@ -1839,7 +1863,7 @@
       }
     }
 
-    function toggleSubmenu(el) {
+    window.toggleSubmenu = function(el) {
       const parent = el.parentElement;
       const submenu = el.nextElementSibling;
       if (submenu && submenu.classList.contains('nav-submenu')) {
@@ -1849,7 +1873,7 @@
       }
     }
 
-    function showPage(p) {
+    window.showPage = function(p) {
       console.log(`📄 Showing page: ${p}`);
       
       document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
@@ -2076,7 +2100,7 @@
       State.currentPage = 1;
       data[0].forEach((h, i) => { State.colIdx[h.toUpperCase()] = i; });
       console.log("✅ Column indices:", State.colIdx);
-      updateDropdownNOP(data);
+      updateDropdowns(data);
       renderHeader(data[0]);
       resetAndFilter();
       setInnerText("lastUpdate", new Date().toLocaleString());
@@ -2176,16 +2200,20 @@
       }
     }
 
-    function handleGlobalSearchSum() {
+    window.handleGlobalSearchSum = function() {
       State.searchSum = document.getElementById("searchInputSum").value.toUpperCase();
       renderSummary();
     }
 
-    function resetAndFilterSum() {
-      const select = document.getElementById('filterNOP_Sum');
-      if (select) {
-        State.columnFiltersSum.NOP = select.value;
-      }
+    window.resetAndFilterSum = function() {
+      const nop = document.getElementById('filterNOP_Sum').value;
+      const status = document.getElementById('filterStatus_Sum').value;
+      const date = document.getElementById('filterDate_Sum').value;
+      
+      State.columnFiltersSum.NOP = nop;
+      State.columnFiltersSum.STATUS = status;
+      State.columnFiltersSum.DATE = date;
+      
       renderSummary();
     }
 
@@ -2270,7 +2298,7 @@
       html += '</tr>';
       
       html += '</tbody></table>';
-      setInnerHTML('summaryTableContainer', html);
+      setInnerHTML('summaryTableContainer', `<div class="table-responsive">${html}</div>`);
 
       renderSummaryCharts();
       updateMap();
@@ -2347,27 +2375,26 @@
           const hasFilter = filteredValues.length > 0 ? 'active' : '';
           const thClass = filteredValues.length > 0 ? 'filtered' : '';
 
-          return `<th onclick="sortTable2(${idx}, event)" class="${thClass}" style="position:relative; cursor:pointer; width:${colWidth}; overflow:hidden;">
+          return `<th class="sortable-header ${thClass}" data-col="${idx}" style="position:relative; cursor:pointer; width:${colWidth}; overflow:hidden;">
             <div class="th-header-wrapper">
               <span>${val}</span>
-              <i class="fa fa-filter filter-icon ${hasFilter}" data-filter-col="${idx}" onclick="openFilterDropdown2(${idx}, event)"></i>
+              <i class="fa fa-filter filter-icon ${hasFilter}" data-filter-col="${idx}"></i>
             </div>
             <div class="filter-dropdown" id="${dropdownId}" data-filter-col="${idx}">
               <div class="filter-search-container">
-                <input type="text" placeholder="Cari..." onkeyup="filterSearch2(this, ${idx})">
+                <input type="text" placeholder="Cari..." class="filter-search-input" data-col="${idx}">
               </div>
               <div class="filter-options" data-filter-list="${idx}">
                 ${uniqueValues.map(v => `
                   <label class="filter-option ${filteredValues.includes(v) ? 'selected' : ''}">
-                    <input type="checkbox" value="${v}" ${filteredValues.includes(v) ? 'checked' : ''} 
-                      onchange="updateFilterOptions2(${idx})">
+                    <input type="checkbox" value="${v}" ${filteredValues.includes(v) ? 'checked' : ''} class="filter-checkbox" data-col="${idx}">
                     <span>${v}</span>
                   </label>
                 `).join('')}
               </div>
               <div class="filter-actions">
                 <span class="filter-count" id="count-${dropdownId}">${filteredValues.length} terpilih</span>
-                <span class="filter-btn filter-btn-clear" onclick="clearFilter2(${idx}, event)">Hapus</span>
+                <span class="filter-btn filter-btn-clear" data-clear-filter="${idx}">Hapus</span>
               </div>
             </div>
           </th>`;
@@ -2377,7 +2404,7 @@
       setInnerHTML("tableHead2", headerRow);
     }
 
-    function filterSearch2(input, colIdx) {
+    window.filterSearch2 = function(input, colIdx) {
       const searchVal = input.value.toUpperCase();
       document.querySelectorAll(`#dashboardPage2 [data-filter-list="${colIdx}"] label`).forEach(label => {
         const text = label.textContent.toUpperCase();
@@ -2385,7 +2412,7 @@
       });
     }
 
-    function updateFilterOptions2(colIdx) {
+    window.updateFilterOptions2 = function(colIdx) {
       const dropdownId = `filter2-${colIdx}`;
       const options = document.querySelectorAll(`#dashboardPage2 [data-filter-col="${colIdx}"] .filter-option`);
       const checked = [];
@@ -2406,7 +2433,7 @@
       updateColumnFilter2(colIdx, checked);
     }
 
-    function clearFilter2(colIdx, event) {
+    window.clearFilter2 = function(colIdx, event) {
       if (event) event.stopPropagation();
       const dropdownId = `filter2-${colIdx}`;
       const dropdown = document.getElementById(dropdownId);
@@ -2421,7 +2448,7 @@
       dropdown.querySelectorAll('.filter-option').forEach(opt => opt.style.display = '');
     }
 
-    function openFilterDropdown2(colIdx, event) {
+    window.openFilterDropdown2 = function(colIdx, event) {
       event.stopPropagation();
       const dropdownId = `filter2-${colIdx}`;
       const dropdown = document.getElementById(dropdownId);
@@ -2463,7 +2490,7 @@
       const slaRemIdx = headers.indexOf("SLA REMAINING");
 
       setInnerHTML("tableBody2", data.map((r, i) => {
-        return `<tr onclick="openDetailModal(${start + i}, true)">
+        return `<tr class="clickable-row" data-index="${start + i}" data-sheet2="true">
           <td>${start + i + 1}</td>
           ${r.map((cell, idx) => {
             let val = cell;
@@ -2481,7 +2508,7 @@
       if (pageInput2) pageInput2.value = State.currentPage2;
     }
 
-    function sortTable2(columnIndex, event) {
+    window.sortTable2 = function(columnIndex, event) {
       const isShift = event && event.shiftKey;
       const existingIdx = State.sorts2.findIndex(s => s.colIdx === columnIndex);
       
@@ -2668,38 +2695,32 @@
     }
 
     // ========== FILTER & SORT ==========
-    function handleGlobalSearch() {
+    window.handleGlobalSearch = function() {
       resetAndFilter();
       resetAndFilter2();
     }
 
-    function resetAndFilter() {
-      const nop1 = document.getElementById('filterNOP');
-      const nop2 = document.getElementById('filterNOP_Sum');
-      const val = (nop1 && nop1.offsetParent !== null) ? nop1.value : (nop2 ? nop2.value : '');
-      
-      if (!State.filters) State.filters = {};
-      State.filters.NOP = val;
-      if (nop1) nop1.value = val;
-      if (nop2) nop2.value = val;
-      
-      State.currentPage = 1;
-      State.currentPage2 = 1;
+    window.resetAndFilter = function() {
+      const nop = document.getElementById('filterNOP').value;
+      const status = document.getElementById('filterStatus').value;
+      const date = document.getElementById('filterDate').value;
+      const searchInput = document.getElementById("searchInput");
+      const search = searchInput ? searchInput.value.toUpperCase() : "";
       
       if (State.globalData && State.globalData.length > 1) {
-        const nop = State.filters.NOP.toUpperCase();
-        const search = document.getElementById("searchInput") ? document.getElementById("searchInput").value.toUpperCase() : "";
-        
         State.filteredRows = State.globalData.slice(1).filter(r => {
-          const matchNop = !nop || String(r[State.colIdx["NOP"]]).toUpperCase() === nop;
+          const matchNop = !nop || String(r[State.colIdx["NOP"]]).toUpperCase() === nop.toUpperCase();
+          const matchStatus = !status || String(r[State.colIdx["NE STATUS"]]).toUpperCase() === status.toUpperCase();
+          const matchDate = !date || String(r[State.colIdx["DATE OPEN"]]).toUpperCase() === date.toUpperCase();
           const matchSearch = !search || r.join(" ").toUpperCase().includes(search);
+          
           const matchColumns = Object.keys(State.columnFilters).every(colIdx => {
             const filters = State.columnFilters[colIdx];
             if (!filters || filters.length === 0) return true;
             const cellValue = String(r[colIdx]).toUpperCase();
             return filters.some(f => cellValue.includes(f.toUpperCase()));
           });
-          return matchNop && matchSearch && matchColumns;
+          return matchNop && matchStatus && matchDate && matchSearch && matchColumns;
         });
         
         updateScores(State.filteredRows);
@@ -2727,7 +2748,7 @@
       updateHeaderSortIndicators();
     }
 
-    function sortTable(columnIndex, event) {
+    window.sortTable = function(columnIndex, event) {
       const isShift = event && event.shiftKey;
       const existingIdx = State.sorts.findIndex(s => s.colIdx === columnIndex);
       
@@ -2766,7 +2787,7 @@
       });
     }
 
-    function openFilterDropdown(colIdx, event) {
+    window.openFilterDropdown = function(colIdx, event) {
       event.stopPropagation();
       
       const dropdownId = `filter-${colIdx}`;
@@ -2841,31 +2862,26 @@
       }
     }
 
-    function handleGlobalSearch2() {
+    window.handleGlobalSearch2 = function() {
       State.currentPage2 = 1;
       resetAndFilter2();
     }
 
-    function resetAndFilter2() {
+    window.resetAndFilter2 = function() {
       const searchInput = document.getElementById("searchInput2");
       const search = searchInput ? searchInput.value.toUpperCase() : "";
-      const nopFilter = document.getElementById("filterNOP2");
-      const nopValue = nopFilter ? nopFilter.value.toUpperCase() : "";
+      const nop = document.getElementById("filterNOP2").value;
+      const status = document.getElementById("filterStatus2").value;
+      const date = document.getElementById("filterDate2").value;
 
-      console.log(`🔍 Filtering Sheet 2: Search="${search}", NOP="${nopValue}"`);
-
-      // Jika globalData2 kosong, gunakan array kosong
       if (!State.globalData2 || State.globalData2.length < 2) {
-        console.warn("⚠️ No data in globalData2");
         State.filteredRows2 = [];
       } else {
         State.filteredRows2 = State.globalData2.slice(1).filter(r => {
           const matchSearch = !search || r.join(" ").toUpperCase().includes(search);
-          
-          let matchNOP = true;
-          if (nopValue && State.colIdx2["NOP"] !== undefined) {
-            matchNOP = String(r[State.colIdx2["NOP"]]).toUpperCase() === nopValue;
-          }
+          const matchNOP = !nop || String(r[State.colIdx2["NOP"]]).toUpperCase() === nop.toUpperCase();
+          const matchStatus = !status || String(r[State.colIdx2["TYPE TICKET"]]).toUpperCase() === status.toUpperCase();
+          const matchDate = !date || String(r[State.colIdx2["CREATED AT"]]).toUpperCase().includes(date.toUpperCase());
 
           const matchColumns = Object.keys(State.columnFilters2).every(colIdx => {
             const filters = State.columnFilters2[colIdx];
@@ -2873,11 +2889,10 @@
             const cellValue = String(r[colIdx]).toUpperCase();
             return filters.some(f => cellValue.includes(f.toUpperCase()));
           });
-          return matchSearch && matchNOP && matchColumns;
+          return matchSearch && matchNOP && matchStatus && matchDate && matchColumns;
         });
       }
 
-      console.log(`✅ Filtered rows 2: ${State.filteredRows2.length}`);
       State.currentPage2 = 1;
       updateScores2(State.filteredRows2);
       applySort2();
@@ -2900,27 +2915,26 @@
           const hasFilter = filteredValues.length > 0 ? 'active' : '';
           const thClass = filteredValues.length > 0 ? 'filtered' : '';
           
-          return `<th onclick="sortTable(${idx}, event)" class="${thClass}" style="position:relative; cursor:pointer; width:${colWidth}; overflow:hidden;">
+          return `<th class="sortable-header ${thClass}" data-col="${idx}" style="position:relative; cursor:pointer; width:${colWidth}; overflow:hidden;">
             <div class="th-header-wrapper">
               <span>${val}</span>
-              <i class="fa fa-filter filter-icon ${hasFilter}" data-filter-col="${idx}" onclick="openFilterDropdown(${idx}, event)"></i>
+              <i class="fa fa-filter filter-icon ${hasFilter}" data-filter-col="${idx}"></i>
             </div>
             <div class="filter-dropdown" id="${dropdownId}" data-filter-col="${idx}">
               <div class="filter-search-container">
-                <input type="text" placeholder="Cari..." onkeyup="filterSearch(this, ${idx})">
+                <input type="text" placeholder="Cari..." class="filter-search-input" data-col="${idx}">
               </div>
               <div class="filter-options" data-filter-list="${idx}">
                 ${uniqueValues.map(v => `
                   <label class="filter-option ${filteredValues.includes(v) ? 'selected' : ''}">
-                    <input type="checkbox" value="${v}" ${filteredValues.includes(v) ? 'checked' : ''} 
-                      onchange="updateFilterOptions(${idx})">
+                    <input type="checkbox" value="${v}" ${filteredValues.includes(v) ? 'checked' : ''} class="filter-checkbox" data-col="${idx}">
                     <span>${v}</span>
                   </label>
                 `).join('')}
               </div>
               <div class="filter-actions">
                 <span class="filter-count" id="count-${dropdownId}">${filteredValues.length} terpilih</span>
-                <span class="filter-btn filter-btn-clear" onclick="clearFilter(${idx}, event)">Hapus</span>
+                <span class="filter-btn filter-btn-clear" data-clear-filter="${idx}">Hapus</span>
               </div>
             </div>
           </th>`;
@@ -2930,7 +2944,7 @@
       setInnerHTML("tableHead", headerRow);
     }
 
-    function filterSearch(input, colIdx) {
+    window.filterSearch = function(input, colIdx) {
       const searchVal = input.value.toUpperCase();
       document.querySelectorAll(`[data-filter-list="${colIdx}"] label`).forEach(label => {
         const text = label.textContent.toUpperCase();
@@ -2938,7 +2952,7 @@
       });
     }
 
-    function updateFilterOptions(colIdx) {
+    window.updateFilterOptions = function(colIdx) {
       const dropdownId = `filter-${colIdx}`;
       const options = document.querySelectorAll(`[data-filter-col="${colIdx}"] .filter-option`);
       const checked = [];
@@ -2959,7 +2973,7 @@
       updateColumnFilter(colIdx, checked);
     }
 
-    function clearFilter(colIdx, event) {
+    window.clearFilter = function(colIdx, event) {
       if (event) event.stopPropagation();
       const dropdownId = `filter-${colIdx}`;
       const dropdown = document.getElementById(dropdownId);
@@ -2996,7 +3010,7 @@
         const durationExceeded = duration > 4;
         const rowClass = slaExceeded ? 'sla-exceeded' : '';
 
-        return `<tr class="${rowClass}" onclick="openDetailModal(${start + i})">
+        return `<tr class="clickable-row ${rowClass}" data-index="${start + i}">
           <td>${start + i + 1}</td>
           ${r.slice(0, 15).map((cell, idx) => {
             let cellClass = '';
@@ -3642,48 +3656,213 @@
       setInnerText("sumEnom", totalEnom);
     }
 
-    function updateDropdownNOP(data) {
-      const nops = [...new Set(data.slice(1).map(r => r[State.colIdx["NOP"]]))].sort();
-      const options = `<option value="">-- REGIONAL 5 --</option>` + nops.map(n => `<option value="${n}">${n}</option>`).join('');
+    function updateDropdowns(data) {
+      if (!data || data.length < 2) return;
+      const headers = data[0];
+      const rows = data.slice(1);
       
-      const ids = ["filterNOP", "filterNOP2"];
-      ids.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-          const currentVal = el.value;
-          el.innerHTML = options;
-          el.value = currentVal;
-        }
-      });
+      const nopIdx = headers.indexOf('NOP');
+      const statusIdx = headers.indexOf('NE STATUS');
+      const dateIdx = headers.indexOf('DATE OPEN');
+
+      if (nopIdx !== -1) {
+        const nops = [...new Set(rows.map(r => r[nopIdx]))].sort();
+        populateSelect('filterNOP', nops, '-- REGIONAL 5 --');
+        populateSelect('filterNOP2', nops, '-- REGIONAL 5 --');
+        populateSelect('filterNOP_Sum', nops, '-- REGIONAL 5 --');
+      }
+
+      if (statusIdx !== -1) {
+        const statuses = [...new Set(rows.map(r => r[statusIdx]))].sort();
+        populateSelect('filterStatus', statuses, '-- All Status --');
+        populateSelect('filterStatus2', statuses, '-- All Status --');
+        populateSelect('filterStatus_Sum', statuses, '-- All Status --');
+      }
+
+      if (dateIdx !== -1) {
+        const dates = [...new Set(rows.map(r => r[dateIdx]))].sort().reverse();
+        populateSelect('filterDate', dates, '-- All Date --');
+        populateSelect('filterDate2', dates, '-- All Date --');
+        populateSelect('filterDate_Sum', dates, '-- All Date --');
+      }
     }
 
-    // ========== CLOSE DROPDOWNS & MODAL ==========
-    document.addEventListener('click', (e) => {
-      if (!e.target.closest('.filter-icon') && !e.target.closest('.filter-dropdown')) {
-        document.querySelectorAll('.filter-dropdown.show').forEach(d => d.classList.remove('show'));
-      }
-      if (e.target.id === 'detailModal') {
-        closeDetailModal();
-      }
-    });
-    // ========== SETUP NAVIGATION EVENT LISTENERS ==========
-    setTimeout(function() {
-      // Auto-login for development
-      login();
+    function populateSelect(id, options, defaultText) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const currentVal = el.value;
+      el.innerHTML = `<option value="">${defaultText}</option>`;
+      options.forEach(opt => {
+        if (opt) el.innerHTML += `<option value="${opt}">${opt}</option>`;
+      });
+      el.value = currentVal;
+    }
+
+    // ========== INITIALIZATION ==========
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log("🚀 DOM Content Loaded - Initializing Event Listeners");
+
+      // Login
+      const loginBtn = document.getElementById('loginBtn');
+      if (loginBtn) loginBtn.addEventListener('click', window.login);
+
+      // Sidebar
+      const sidebarToggle = document.getElementById('sidebarToggle');
+      if (sidebarToggle) sidebarToggle.addEventListener('click', window.toggleSidebar);
+
+      document.querySelectorAll('.nav-item[data-page]').forEach(el => {
+        el.addEventListener('click', () => window.showPage(el.dataset.page));
+      });
+
+      document.querySelectorAll('.nav-submenu-toggle').forEach(el => {
+        el.addEventListener('click', () => window.toggleSubmenu(el));
+      });
+
+      const logoutBtn = document.getElementById('logoutBtn');
+      if (logoutBtn) logoutBtn.addEventListener('click', window.logout);
+
+      // Summary Filters
+      const filterNOP_Sum = document.getElementById('filterNOP_Sum');
+      if (filterNOP_Sum) filterNOP_Sum.addEventListener('change', window.resetAndFilterSum);
       
-      const navDetail2 = document.getElementById('navDetail2');
-      if (navDetail2) {
-        navDetail2.addEventListener('click', function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          console.log("📋 Report 2 clicked!");
-          showPage('detail2');
-        });
-        console.log("✅ Report 2 event listener registered");
-      } else {
-        console.warn("⚠️ navDetail2 element not found!");
-      }
-    }, 500);
+      const filterStatus_Sum = document.getElementById('filterStatus_Sum');
+      if (filterStatus_Sum) filterStatus_Sum.addEventListener('change', window.resetAndFilterSum);
+
+      const filterDate_Sum = document.getElementById('filterDate_Sum');
+      if (filterDate_Sum) filterDate_Sum.addEventListener('change', window.resetAndFilterSum);
+
+      const searchInputSum = document.getElementById('searchInputSum');
+      if (searchInputSum) searchInputSum.addEventListener('keyup', window.handleGlobalSearchSum);
+
+      const captureSummaryBtn = document.getElementById('captureSummaryBtn');
+      if (captureSummaryBtn) captureSummaryBtn.addEventListener('click', (e) => window.captureSummaryFull(e));
+
+      // Detail Filters
+      const filterNOP = document.getElementById('filterNOP');
+      if (filterNOP) filterNOP.addEventListener('change', window.resetAndFilter);
+
+      const filterStatus = document.getElementById('filterStatus');
+      if (filterStatus) filterStatus.addEventListener('change', window.resetAndFilter);
+
+      const filterDate = document.getElementById('filterDate');
+      if (filterDate) filterDate.addEventListener('change', window.resetAndFilter);
+
+      const searchInput = document.getElementById('searchInput');
+      if (searchInput) searchInput.addEventListener('keyup', window.handleGlobalSearch);
+
+      const captureDetailBtn = document.getElementById('captureDetailBtn');
+      if (captureDetailBtn) captureDetailBtn.addEventListener('click', (e) => window.captureDetailFull(e));
+
+      // Pagination Detail 1
+      const prevPageBtn = document.getElementById('prevPageBtn');
+      if (prevPageBtn) prevPageBtn.addEventListener('click', window.prevPage);
+
+      const nextPageBtn = document.getElementById('nextPageBtn');
+      if (nextPageBtn) nextPageBtn.addEventListener('click', window.nextPage);
+
+      const pageInput = document.getElementById('pageInput');
+      if (pageInput) pageInput.addEventListener('change', (e) => window.goToPage(e.target.value));
+
+      // Detail 2 Filters
+      const filterNOP2 = document.getElementById('filterNOP2');
+      if (filterNOP2) filterNOP2.addEventListener('change', window.resetAndFilter2);
+
+      const filterStatus2 = document.getElementById('filterStatus2');
+      if (filterStatus2) filterStatus2.addEventListener('change', window.resetAndFilter2);
+
+      const filterDate2 = document.getElementById('filterDate2');
+      if (filterDate2) filterDate2.addEventListener('change', window.resetAndFilter2);
+
+      const searchInput2 = document.getElementById('searchInput2');
+      if (searchInput2) searchInput2.addEventListener('keyup', window.handleGlobalSearch2);
+
+      const captureDetail2Btn = document.getElementById('captureDetail2Btn');
+      if (captureDetail2Btn) captureDetail2Btn.addEventListener('click', (e) => window.captureDetailFull2(e));
+
+      // Pagination Detail 2
+      const prevPageBtn2 = document.getElementById('prevPageBtn2');
+      if (prevPageBtn2) prevPageBtn2.addEventListener('click', window.prevPage2);
+
+      const nextPageBtn2 = document.getElementById('nextPageBtn2');
+      if (nextPageBtn2) nextPageBtn2.addEventListener('click', window.nextPage2);
+
+      const pageInput2 = document.getElementById('pageInput2');
+      if (pageInput2) pageInput2.addEventListener('change', (e) => window.goToPage2(e.target.value));
+
+      // Chart Filters
+      const chartFilterType = document.getElementById('chartFilterType');
+      if (chartFilterType) chartFilterType.addEventListener('change', window.updateChartFilters);
+
+      const chartFilterNop = document.getElementById('chartFilterNop');
+      if (chartFilterNop) chartFilterNop.addEventListener('change', window.updateChartFilters);
+
+      const chartFilterSeverity = document.getElementById('chartFilterSeverity');
+      if (chartFilterSeverity) chartFilterSeverity.addEventListener('change', window.updateChartFilters);
+
+      const chartFilterStatus = document.getElementById('chartFilterStatus');
+      if (chartFilterStatus) chartFilterStatus.addEventListener('change', window.updateChartFilters);
+
+      const resetChartFiltersBtn = document.getElementById('resetChartFiltersBtn');
+      if (resetChartFiltersBtn) resetChartFiltersBtn.addEventListener('click', window.resetChartFilters);
+
+      // Table Row Clicks (Delegation)
+      document.getElementById('mainTable').addEventListener('click', (e) => {
+        const row = e.target.closest('.clickable-row');
+        if (row) window.openDetailModal(parseInt(row.dataset.index));
+      });
+
+      document.getElementById('mainTable2').addEventListener('click', (e) => {
+        const row = e.target.closest('.clickable-row');
+        if (row) window.openDetailModal(parseInt(row.dataset.index), true);
+      });
+
+      // Table Header Clicks (Delegation)
+      document.addEventListener('click', (e) => {
+        const th = e.target.closest('.sortable-header');
+        if (th) {
+          const colIdx = parseInt(th.dataset.col);
+          const isSheet2 = !!e.target.closest('#dashboardPage2');
+          if (isSheet2) window.sortTable2(colIdx, e);
+          else window.sortTable(colIdx, e);
+        }
+
+        const icon = e.target.closest('.filter-icon');
+        if (icon) {
+          const colIdx = parseInt(icon.dataset.filterCol);
+          const isSheet2 = !!e.target.closest('#dashboardPage2');
+          if (isSheet2) window.openFilterDropdown2(colIdx, e);
+          else window.openFilterDropdown(colIdx, e);
+        }
+
+        const clearBtn = e.target.closest('[data-clear-filter]');
+        if (clearBtn) {
+          const colIdx = parseInt(clearBtn.dataset.clearFilter);
+          const isSheet2 = !!e.target.closest('#dashboardPage2');
+          if (isSheet2) window.clearFilter2(colIdx, e);
+          else window.clearFilter(colIdx, e);
+        }
+      });
+
+      document.addEventListener('keyup', (e) => {
+        const searchInput = e.target.closest('.filter-search-input');
+        if (searchInput) {
+          const colIdx = parseInt(searchInput.dataset.col);
+          const isSheet2 = !!e.target.closest('#dashboardPage2');
+          if (isSheet2) window.filterSearch2(searchInput, colIdx);
+          else window.filterSearch(searchInput, colIdx);
+        }
+      });
+
+      document.addEventListener('change', (e) => {
+        const checkbox = e.target.closest('.filter-checkbox');
+        if (checkbox) {
+          const colIdx = parseInt(checkbox.dataset.col);
+          const isSheet2 = !!e.target.closest('#dashboardPage2');
+          if (isSheet2) window.updateFilterOptions2(colIdx);
+          else window.updateFilterOptions(colIdx);
+        }
+      });
+    });
   </script>
 </body>
 </html>
