@@ -1,0 +1,151 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  background: #f4f7fb;
+  font-family: Inter, Arial, sans-serif;
+}
+
+.hourly-shell {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 16px 20px 24px;
+  box-sizing: border-box;
+}
+
+.page-header--hourly {
+  background: linear-gradient(135deg, #ffffff 0%, #f4f8ff 100%);
+  border-radius: 20px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+
+.toolbar--hourly {
+  margin-bottom: 18px;
+}
+
+#hourlyFilters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+#hourlyFilters .field-control {
+  min-width: 180px;
+}
+
+.panel-card--hourly-table {
+  background: #eef4fb;
+  border-radius: 20px;
+  padding: 16px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.table-wrapper--hourly {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: calc(100vh - 280px);
+  border-radius: 14px;
+  background: #fff;
+}
+
+#hourlyTable {
+  width: 100%;
+  min-width: 1800px;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+#hourlyTable th {
+  position: sticky;
+  top: 0;
+  background: #274f8a;
+  color: #fff;
+  z-index: 1;
+  text-align: center;
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+#hourlyTable th,
+#hourlyTable td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #d9e2ef;
+  vertical-align: middle;
+}
+
+#hourlyTable td {
+  font-size: 0.9rem;
+  color: #0f172a;
+  white-space: nowrap;
+}
+
+#hourlyTable tbody tr:nth-child(even) {
+  background: #f8fbff;
+}
+
+#hourlyTable td:nth-child(2),
+#hourlyTable td:nth-child(13) {
+  white-space: normal;
+  min-width: 220px;
+}
+
+.hourly-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 88px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.hourly-badge--success {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.hourly-badge--warning {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.hourly-badge--danger {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.hourly-badge--info {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+@media (max-width: 992px) {
+  #hourlyFilters {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .hourly-shell {
+    padding: 16px;
+  }
+
+  #hourlyFilters {
+    grid-template-columns: 1fr;
+  }
+
+  #hourlyFilters .field-control {
+    width: 100%;
+  }
+
+  .table-wrapper--hourly {
+    max-height: none;
+  }
+}
