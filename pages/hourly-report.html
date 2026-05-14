@@ -21,8 +21,36 @@
               <span>Total Row: <strong id="hourlyTotalRows">0</strong></span>
               <span>Update Time: <strong id="hourlyUpdatedAt">-</strong></span>
             </div>
+            <div class="toolbar-group toolbar-group--header" id="hourlyFilters">
+              <label class="field-control field-control--inline">
+                <span>NOP</span>
+                <select id="hourlyFilterNop">
+                  <option value="ALL">All NOP</option>
+                </select>
+              </label>
+              <label class="field-control field-control--inline">
+                <span>Responsible</span>
+                <select id="hourlyFilterResponsible">
+                  <option value="ALL">All Responsible</option>
+                </select>
+              </label>
+              <label class="field-control field-control--inline">
+                <span>Site Class</span>
+                <select id="hourlyFilterClass">
+                  <option value="ALL">All Class</option>
+                </select>
+              </label>
+              <label class="field-control field-control--inline">
+                <span>NE Status</span>
+                <select id="hourlyFilterNeStatus">
+                  <option value="ALL">All Status</option>
+                </select>
+              </label>
+            </div>
           </div>
-          <div class="brand-logos">
+          <div class="brand-logos brand-logos--actions">
+            <button class="action-button" id="hourlyCaptureButton" type="button">Capture / Print</button>
+            <button class="action-button action-button--secondary" id="hourlyShowAllButton" type="button">Show All Rows</button>
             <span class="logo-chip">Telkomsel</span>
             <span class="logo-chip">Telkominfra</span>
           </div>
@@ -32,35 +60,6 @@
         <a class="page-nav__link" href="./summary.html">Summary</a>
         <a class="page-nav__link page-nav__link--active" href="./hourly-report.html" aria-current="page">Hourly Report</a>
       </nav>
-
-      <section class="toolbar toolbar--hourly">
-        <div class="toolbar-group" id="hourlyFilters">
-          <label class="field-control">
-            <span>NOP</span>
-            <select id="hourlyFilterNop">
-              <option value="ALL">All NOP</option>
-            </select>
-          </label>
-          <label class="field-control">
-            <span>Responsible</span>
-            <select id="hourlyFilterResponsible">
-              <option value="ALL">All Responsible</option>
-            </select>
-          </label>
-          <label class="field-control">
-            <span>Site Class</span>
-            <select id="hourlyFilterClass">
-              <option value="ALL">All Class</option>
-            </select>
-          </label>
-          <label class="field-control">
-            <span>NE Status</span>
-            <select id="hourlyFilterNeStatus">
-              <option value="ALL">All Status</option>
-            </select>
-          </label>
-        </div>
-      </section>
 
       <div class="ui-state is-hidden" id="hourlyState" aria-live="polite"></div>
 
@@ -77,6 +76,12 @@
         <article class="panel-card panel-card--table panel-card--hourly-table">
           <div class="panel-title-row">
             <h2>Site Detail Report</h2>
+            <div class="hourly-pagination" id="hourlyPagination">
+              <span class="hourly-pagination__info" id="hourlyPaginationInfo">Showing 0 of 0</span>
+              <button class="hourly-pagination__btn" id="hourlyPrevPage" type="button">Prev</button>
+              <span class="hourly-pagination__page" id="hourlyPageIndicator">1 / 1</span>
+              <button class="hourly-pagination__btn" id="hourlyNextPage" type="button">Next</button>
+            </div>
           </div>
           <div class="table-wrapper table-wrapper--hourly">
             <table class="data-table" id="hourlyTable">

@@ -18,11 +18,20 @@
             <p class="eyebrow">Dashboard Monitoring OMC</p>
             <h1>OMC REG 5 | SUMMARY DASHBOARD</h1>
             <div class="meta-row">
-              <span>Shift Team: <strong id="summaryShiftTeam">-</strong></span>
+              <label class="field-control field-control--inline">
+                <span>Shift Team</span>
+                <select id="summaryShiftTeamSelect" aria-label="Shift Team">
+                  <option value="Abe">Abe</option>
+                  <option value="cede">cede</option>
+                  <option value="eef">eef</option>
+                  <option value="geha">geha</option>
+                </select>
+              </label>
               <span>Update Time: <strong id="summaryUpdatedAt">-</strong></span>
             </div>
           </div>
-          <div class="brand-logos">
+          <div class="brand-logos brand-logos--actions">
+            <button class="action-button" id="summaryCaptureButton" type="button">Capture / Print</button>
             <span class="logo-chip">Telkomsel</span>
             <span class="logo-chip">Telkominfra</span>
           </div>
@@ -61,15 +70,9 @@
       <section class="section-block">
         <div class="scorecard-panel">
           <div class="panel-title-row">
-            <h2>Group Status</h2>
+            <h2>KPI Summary Compact</h2>
           </div>
-          <div class="scorecard-grid scorecard-grid--status" id="statusCards"></div>
-        </div>
-        <div class="scorecard-panel">
-          <div class="panel-title-row">
-            <h2>Down by Site Class</h2>
-          </div>
-          <div class="scorecard-grid scorecard-grid--class" id="classCards"></div>
+          <div class="scorecard-grid scorecard-grid--kpi" id="summaryKpiCards"></div>
         </div>
       </section>
 
@@ -85,7 +88,6 @@
                   <tr>
                     <th>NOP</th>
                     <th>Total MBP</th>
-                    <th>MBP Standby</th>
                     <th>MBP OTW</th>
                     <th>MBP Backup</th>
                     <th>Mains Fail</th>

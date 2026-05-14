@@ -2,6 +2,7 @@ var summaryFiltersBound = false;
 
 document.addEventListener('DOMContentLoaded', async function () {
   bindSummaryFilters();
+  bindSummaryActions();
   await loadSummary();
 });
 
@@ -34,8 +35,7 @@ async function loadSummary() {
   } catch (error) {
     console.error('Summary request error:', error);
     setSummaryState('Failed to load summary data. Please refresh the page.', 'error');
-    renderScorecards('statusCards', []);
-    renderScorecards('classCards', []);
+    renderScorecards('summaryKpiCards', []);
     renderSummaryTable([]);
     return;
   }
@@ -43,8 +43,7 @@ async function loadSummary() {
   if (!response.success) {
     console.error('Failed to load summary data:', response.message);
     setSummaryState('Failed to load summary data. Please refresh the page.', 'error');
-    renderScorecards('statusCards', []);
-    renderScorecards('classCards', []);
+    renderScorecards('summaryKpiCards', []);
     renderSummaryTable([]);
     return;
   }
@@ -55,35 +54,54 @@ async function loadSummary() {
   var filters = response.filters || {};
 
   window.OMCUtils.setText('summaryUpdatedAt', response.updatedAt || '-');
-  window.OMCUtils.setText('summaryShiftTeam', response.shiftTeam || '-');
 
-  renderScorecards('statusCards', window.OMCTransformers.buildStatusCards(metrics));
-  renderScorecards('classCards', window.OMCTransformers.buildClassCards(metrics));
+  renderScorecards(
+    'summaryKpiCards',
+    window.OMCTransformers.buildStatusCards(metrics).concat(window.OMCTransformers.buildClassCards(metrics))
+  );
   renderSummaryTable(summaryRows);
   populateFilter('summaryFilterNop', filters.nop || []);
   populateFilter('summaryFilterResponsible', filters.responsible || []);
   populateFilter('summaryFilterClass', filters.siteClass || []);
 
-  window.OMCCharts.renderPlaceholder('siteClassChart', 'Down by Site Class', metrics.downByClass || {});
-  window.OMCCharts.renderPlaceholder('responsibleChart', 'Responsible', metrics.responsible || {});
-  window.OMCCharts.renderPlaceholder('mbpStatusChart', 'MBP Metrics', {
-    standby: metrics.mbpStandby || 0,
-    otw: metrics.mbpOtw || 0,
-    backup: metrics.mbpBackup || 0
+  window.OMCCharts.renderMetricBars('siteClassChart', metrics.downByClass || {}, {
+    emptyLabel: 'No site class metrics.',
+    maxItems: 5
   });
-  window.OMCCharts.renderPlaceholder('neStatusChart', 'NE Metrics', {
-    mainsFail: metrics.mainsFail || 0,
-    down: metrics.down || 0,
-    up: metrics.up || 0
+  window.OMCCharts.renderMetricBars('responsibleChart', metrics.responsible || {}, {
+    emptyLabel: 'No responsible metrics.',
+    maxItems: 6
   });
-  window.OMCMap.renderPlaceholder(dataRows.filter(function (row) {
-    return !!row.siteCoord;
-  }));
+  window.OMCCharts.renderMetricBars('mbpStatusChart', {
+    Standby: metrics.mbpStandby || 0,
+    OTW: metrics.mbpOtw || 0,
+    Backup: metrics.mbpBackup || 0
+  }, {
+    emptyLabel: 'No MBP status metrics.'
+  });
+  window.OMCCharts.renderMetricBars('neStatusChart', {
+    'Mains Fail': metrics.mainsFail || 0,
+    Down: metrics.down || 0,
+    UP: metrics.up || 0
+  }, {
+    emptyLabel: 'No NE status metrics.'
+  });
+
+  window.OMCMap.renderSummaryMap(dataRows);
 
   if (!summaryRows.length) {
     setSummaryState('No data for selected filter.', 'empty');
   } else {
     clearSummaryState();
+  }
+}
+
+function bindSummaryActions() {
+  var captureButton = document.getElementById('summaryCaptureButton');
+  if (captureButton) {
+    captureButton.addEventListener('click', function () {
+      window.print();
+    });
   }
 }
 
@@ -120,7 +138,7 @@ function renderSummaryTable(rows) {
   if (!tbody) return;
 
   if (!(rows || []).length) {
-    tbody.innerHTML = '<tr><td colspan="11" class="empty-cell">No summary data available.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="10" class="empty-cell">No summary data available.</td></tr>';
     return;
   }
 
@@ -129,7 +147,6 @@ function renderSummaryTable(rows) {
       '<tr>',
       '<td>' + safeCell(row.nop) + '</td>',
       '<td>' + safeCell(row.totalMbp, '0') + '</td>',
-      '<td>' + safeCell(row.mbpStandby, '0') + '</td>',
       '<td>' + safeCell(row.mbpOtw, '0') + '</td>',
       '<td>' + safeCell(row.mbpBackup, '0') + '</td>',
       '<td>' + safeCell(row.mainsFail, '0') + '</td>',

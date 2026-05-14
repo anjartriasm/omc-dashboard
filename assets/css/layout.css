@@ -48,6 +48,11 @@
   gap: 16px;
 }
 
+.brand-logos--actions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 .brand-logos img {
   height: 44px;
   object-fit: contain;
@@ -104,6 +109,10 @@
   gap: 6px;
 }
 
+.field-control--inline {
+  gap: 4px;
+}
+
 .field-control span {
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
@@ -112,7 +121,7 @@
 
 .field-control select {
   min-width: 180px;
-  height: 40px;
+  height: 36px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   padding: 0 12px;

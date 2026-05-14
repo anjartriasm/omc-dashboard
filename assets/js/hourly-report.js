@@ -1,7 +1,12 @@
 var hourlyFiltersBound = false;
+var HOURLY_ROWS_PER_PAGE = 20;
+var hourlyCurrentPage = 1;
+var hourlyRowsCache = [];
+var hourlyShowAllRows = false;
 
 document.addEventListener('DOMContentLoaded', async function () {
   bindHourlyFilters();
+  bindHourlyActions();
   await loadHourlyReport();
 });
 
@@ -17,6 +22,46 @@ function bindHourlyFilters() {
   });
 
   hourlyFiltersBound = true;
+}
+
+function bindHourlyActions() {
+  var prevButton = document.getElementById('hourlyPrevPage');
+  var nextButton = document.getElementById('hourlyNextPage');
+  var captureButton = document.getElementById('hourlyCaptureButton');
+  var showAllButton = document.getElementById('hourlyShowAllButton');
+
+  if (prevButton) {
+    prevButton.addEventListener('click', function () {
+      if (hourlyCurrentPage > 1) {
+        hourlyCurrentPage -= 1;
+        renderHourlyTable(hourlyRowsCache);
+      }
+    });
+  }
+
+  if (nextButton) {
+    nextButton.addEventListener('click', function () {
+      var totalPages = getTotalPages(hourlyRowsCache.length);
+      if (hourlyCurrentPage < totalPages) {
+        hourlyCurrentPage += 1;
+        renderHourlyTable(hourlyRowsCache);
+      }
+    });
+  }
+
+  if (captureButton) {
+    captureButton.addEventListener('click', function () {
+      window.print();
+    });
+  }
+
+  if (showAllButton) {
+    showAllButton.addEventListener('click', function () {
+      hourlyShowAllRows = !hourlyShowAllRows;
+      showAllButton.textContent = hourlyShowAllRows ? 'Show Paginated Rows' : 'Show All Rows';
+      renderHourlyTable(hourlyRowsCache);
+    });
+  }
 }
 
 async function loadHourlyReport() {
@@ -50,6 +95,8 @@ async function loadHourlyReport() {
 
   var rows = window.OMCTransformers.transformRows(response.data || []);
   var filters = response.filters || {};
+  hourlyRowsCache = rows;
+  hourlyCurrentPage = 1;
 
   window.OMCUtils.setText('hourlyUpdatedAt', response.updatedAt || '-');
   window.OMCUtils.setText('hourlyTotalRows', response.total || rows.length || 0);
@@ -142,10 +189,20 @@ function renderHourlyTable(rows) {
 
   if (!(rows || []).length) {
     tbody.innerHTML = '<tr><td colspan="16" class="empty-cell">No hourly data available.</td></tr>';
+    updatePagination(0, 0, 0, 0);
     return;
   }
 
-  tbody.innerHTML = (rows || []).map(function (row) {
+  var totalRows = rows.length;
+  var totalPages = getTotalPages(totalRows);
+  if (hourlyCurrentPage > totalPages) hourlyCurrentPage = totalPages;
+
+  var rowsPerPage = hourlyShowAllRows ? totalRows : HOURLY_ROWS_PER_PAGE;
+  var startIndex = hourlyShowAllRows ? 0 : (hourlyCurrentPage - 1) * HOURLY_ROWS_PER_PAGE;
+  var endIndex = Math.min(startIndex + rowsPerPage, totalRows);
+  var pageRows = rows.slice(startIndex, endIndex);
+
+  tbody.innerHTML = pageRows.map(function (row) {
     return [
       '<tr>',
       '<td>' + safeCell(row.siteId) + '</td>',
@@ -160,13 +217,44 @@ function renderHourlyTable(rows) {
       '<td>' + safeCell(row.responsible) + '</td>',
       '<td>' + safeCell(row.alarmStart) + '</td>',
       '<td>' + safeCell(row.duration) + '</td>',
-      '<td>' + safeCell(row.remark) + '</td>',
+      '<td class="hourly-remark-cell">' + safeCell(row.remark) + '</td>',
       '<td>' + safeCell(row.jarakEta) + '</td>',
       '<td>' + safeCell(row.kabupaten) + '</td>',
       '<td>' + safeCell(row.pic) + '</td>',
       '</tr>'
     ].join('');
   }).join('');
+
+  updatePagination(startIndex, endIndex, totalRows, totalPages);
+}
+
+function updatePagination(startIndex, endIndex, totalRows, totalPages) {
+  var info = document.getElementById('hourlyPaginationInfo');
+  var indicator = document.getElementById('hourlyPageIndicator');
+  var prevButton = document.getElementById('hourlyPrevPage');
+  var nextButton = document.getElementById('hourlyNextPage');
+
+  if (info) {
+    if (!totalRows) {
+      info.textContent = 'Showing 0 of 0';
+    } else if (hourlyShowAllRows) {
+      info.textContent = 'Showing all ' + totalRows + ' rows';
+    } else {
+      info.textContent = 'Showing ' + (startIndex + 1) + '–' + endIndex + ' of ' + totalRows;
+    }
+  }
+
+  if (indicator) {
+    indicator.textContent = hourlyShowAllRows ? 'All rows' : hourlyCurrentPage + ' / ' + Math.max(totalPages, 1);
+  }
+
+  if (prevButton) prevButton.disabled = hourlyShowAllRows || hourlyCurrentPage <= 1;
+  if (nextButton) nextButton.disabled = hourlyShowAllRows || hourlyCurrentPage >= totalPages;
+}
+
+function getTotalPages(totalRows) {
+  if (!totalRows) return 1;
+  return Math.max(1, Math.ceil(totalRows / HOURLY_ROWS_PER_PAGE));
 }
 
 function renderStatusBadge(value) {
