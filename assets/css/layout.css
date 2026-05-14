@@ -1,8 +1,8 @@
 .page-shell {
-  width: 1366px;
-  min-height: 768px;
-  margin: 0 auto;
-  padding: 16px;
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 16px 20px 24px;
   background: var(--color-bg-surface);
 }
 
@@ -48,13 +48,54 @@
   gap: 16px;
 }
 
+.brand-logos--actions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 .brand-logos img {
   height: 44px;
   object-fit: contain;
 }
 
+.logo-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  color: var(--color-brand-primary);
+  background: var(--color-bg-muted);
+  border: 1px solid var(--color-border);
+}
+
 .toolbar {
   margin-bottom: 16px;
+}
+
+.page-nav {
+  display: inline-flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 6px;
+  border-radius: var(--radius-md);
+  background: var(--color-bg-muted);
+}
+
+.page-nav__link {
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  color: var(--color-text-secondary);
+}
+
+.page-nav__link--active {
+  color: var(--color-text-inverse);
+  background: var(--color-brand-primary);
 }
 
 .toolbar-group {
@@ -68,6 +109,10 @@
   gap: 6px;
 }
 
+.field-control--inline {
+  gap: 4px;
+}
+
 .field-control span {
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
@@ -76,7 +121,7 @@
 
 .field-control select {
   min-width: 180px;
-  height: 40px;
+  height: 36px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   padding: 0 12px;
@@ -114,4 +159,34 @@
   display: grid;
   gap: 16px;
   margin-bottom: 16px;
+}
+
+@media (max-width: 992px) {
+  .summary-main-grid,
+  .chart-grid--summary {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-shell {
+    padding: 16px;
+  }
+
+  .brand-block {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .toolbar-group {
+    flex-direction: column;
+  }
+
+  .page-nav {
+    width: 100%;
+  }
+
+  .field-control select {
+    min-width: 100%;
+  }
 }

@@ -17,7 +17,7 @@ body {
 }
 
 body {
-  min-width: 1366px;
+  min-width: 0;
 }
 
 a {
