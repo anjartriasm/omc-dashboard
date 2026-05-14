@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OMC Dashboard | Summary</title>
+    <link rel="stylesheet" href="../assets/css/variables.css" />
+    <link rel="stylesheet" href="../assets/css/main.css" />
+    <link rel="stylesheet" href="../assets/css/layout.css" />
+    <link rel="stylesheet" href="../assets/css/components.css" />
+    <link rel="stylesheet" href="../assets/css/summary.css" />
+  </head>
+  <body data-page="summary">
+    <div class="page-shell">
+      <header class="page-header page-header--summary">
+        <div class="brand-block">
+          <div class="brand-copy">
+            <p class="eyebrow">Dashboard Monitoring OMC</p>
+            <h1>OMC REG 5 | SUMMARY DASHBOARD</h1>
+            <div class="meta-row">
+              <span>Shift Team: <strong id="summaryShiftTeam">-</strong></span>
+              <span>Update Time: <strong id="summaryUpdatedAt">-</strong></span>
+            </div>
+          </div>
+          <div class="brand-logos">
+            <img src="../assets/images/logos/telkomsel.png" alt="Telkomsel" />
+            <img src="../assets/images/logos/telkominfra.png" alt="Telkominfra" />
+          </div>
+        </div>
+      </header>
+
+      <section class="toolbar toolbar--summary">
+        <div class="toolbar-group" id="summaryFilters">
+          <label class="field-control">
+            <span>NOP</span>
+            <select id="summaryFilterNop">
+              <option value="ALL">All NOP</option>
+            </select>
+          </label>
+          <label class="field-control">
+            <span>Responsible</span>
+            <select id="summaryFilterResponsible">
+              <option value="ALL">All Responsible</option>
+            </select>
+          </label>
+          <label class="field-control">
+            <span>Site Class</span>
+            <select id="summaryFilterClass">
+              <option value="ALL">All Class</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section class="section-block">
+        <div class="scorecard-panel">
+          <div class="panel-title-row">
+            <h2>Group Status</h2>
+          </div>
+          <div class="scorecard-grid scorecard-grid--status" id="statusCards"></div>
+        </div>
+        <div class="scorecard-panel">
+          <div class="panel-title-row">
+            <h2>Down by Site Class</h2>
+          </div>
+          <div class="scorecard-grid scorecard-grid--class" id="classCards"></div>
+        </div>
+      </section>
+
+      <section class="summary-main-grid">
+        <div class="summary-left-column">
+          <article class="panel-card panel-card--table">
+            <div class="panel-title-row">
+              <h2>NOP Summary</h2>
+            </div>
+            <div class="table-wrapper">
+              <table class="data-table" id="summaryTable">
+                <thead>
+                  <tr>
+                    <th>NOP</th>
+                    <th>Total MBP</th>
+                    <th>MBP Standby</th>
+                    <th>MBP OTW</th>
+                    <th>MBP Backup</th>
+                    <th>Mains Fail</th>
+                    <th>Down ENOM</th>
+                    <th>Down Telkom</th>
+                    <th>Down TP</th>
+                    <th>NE Down</th>
+                    <th>Respon Tsel</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </article>
+
+          <section class="chart-grid chart-grid--summary">
+            <article class="panel-card chart-card">
+              <div class="panel-title-row">
+                <h2>Site Class</h2>
+              </div>
+              <div class="chart-placeholder" id="siteClassChart"></div>
+            </article>
+            <article class="panel-card chart-card">
+              <div class="panel-title-row">
+                <h2>Responsible</h2>
+              </div>
+              <div class="chart-placeholder" id="responsibleChart"></div>
+            </article>
+            <article class="panel-card chart-card">
+              <div class="panel-title-row">
+                <h2>MBP Status</h2>
+              </div>
+              <div class="chart-placeholder" id="mbpStatusChart"></div>
+            </article>
+            <article class="panel-card chart-card">
+              <div class="panel-title-row">
+                <h2>NE Status</h2>
+              </div>
+              <div class="chart-placeholder" id="neStatusChart"></div>
+            </article>
+          </section>
+        </div>
+
+        <div class="summary-right-column">
+          <article class="panel-card panel-card--map">
+            <div class="panel-title-row">
+              <h2>Map Distribution</h2>
+            </div>
+            <div class="map-stage" id="summaryMap"></div>
+            <div class="map-legend" id="summaryMapLegend"></div>
+          </article>
+        </div>
+      </section>
+    </div>
+
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/utils.js"></script>
+    <script src="../assets/js/transformers.js"></script>
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/charts.js"></script>
+    <script src="../assets/js/map.js"></script>
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/summary.js"></script>
+  </body>
+</html>
