@@ -14,6 +14,8 @@ function bindHourlyFilters() {
 }
 
 async function loadHourlyReport() {
+  setHourlyState('Loading hourly report...');
+
   var params = {
     nop: getFilterValue('hourlyFilterNop'),
     responsible: getFilterValue('hourlyFilterResponsible'),
@@ -25,6 +27,9 @@ async function loadHourlyReport() {
 
   if (!response.success) {
     console.error('Failed to load hourly report:', response.message);
+    setHourlyState('Failed to load hourly report. Please refresh the page.', 'error');
+    renderHourlyCards([]);
+    renderHourlyTable([]);
     return;
   }
 
@@ -41,6 +46,12 @@ async function loadHourlyReport() {
 
   renderHourlyCards(rows);
   renderHourlyTable(rows);
+
+  if (!rows.length) {
+    setHourlyState('No data for selected filter.', 'empty');
+  } else {
+    clearHourlyState();
+  }
 }
 
 function getFilterValue(elementId) {
@@ -100,8 +111,8 @@ function renderHourlyCards(rows) {
   container.innerHTML = cards.map(function (card) {
     return [
       '<div class="' + card.className + '">',
-      '<span class="scorecard__label">' + card.label + '</span>',
-      '<strong class="scorecard__value">' + card.value + '</strong>',
+      '<span class="scorecard__label">' + escapeHtml(card.label) + '</span>',
+      '<strong class="scorecard__value">' + escapeHtml(card.value) + '</strong>',
       '</div>'
     ].join('');
   }).join('');
@@ -113,6 +124,11 @@ function renderHourlyTable(rows) {
 
   var tbody = table.querySelector('tbody');
   if (!tbody) return;
+
+  if (!(rows || []).length) {
+    tbody.innerHTML = '<tr><td colspan="16" class="empty-cell">No hourly data available.</td></tr>';
+    return;
+  }
 
   tbody.innerHTML = (rows || []).map(function (row) {
     return [
@@ -146,7 +162,7 @@ function renderStatusBadge(value) {
   else if (text === 'Mains Fail') className = 'hourly-badge hourly-badge--warning';
   else if (text === 'Down') className = 'hourly-badge hourly-badge--danger';
 
-  return '<span class="' + className + '">' + text + '</span>';
+  return '<span class="' + className + '">' + escapeHtml(text) + '</span>';
 }
 
 function renderMbpBadge(value) {
@@ -158,12 +174,37 @@ function renderMbpBadge(value) {
   else if (text === 'Backup') className = 'hourly-badge hourly-badge--success';
   else if (text === 'LOS') className = 'hourly-badge hourly-badge--danger';
 
-  return '<span class="' + className + '">' + text + '</span>';
+  return '<span class="' + className + '">' + escapeHtml(text) + '</span>';
 }
 
 function safeCell(value) {
   if (value === null || value === undefined || value === '') {
     return '-';
   }
-  return String(value);
+  return escapeHtml(value);
+}
+
+function setHourlyState(message, kind) {
+  var state = document.getElementById('hourlyState');
+  if (!state) return;
+  state.className = 'ui-state';
+  if (kind === 'error') state.classList.add('ui-state--error');
+  if (kind === 'empty') state.classList.add('ui-state--empty');
+  state.textContent = message;
+}
+
+function clearHourlyState() {
+  var state = document.getElementById('hourlyState');
+  if (!state) return;
+  state.className = 'ui-state is-hidden';
+  state.textContent = '';
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
