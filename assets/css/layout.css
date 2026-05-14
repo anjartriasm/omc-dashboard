@@ -1,8 +1,8 @@
 .page-shell {
-  width: 1366px;
-  min-height: 768px;
-  margin: 0 auto;
-  padding: 16px;
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 16px 20px 24px;
   background: var(--color-bg-surface);
 }
 
@@ -114,4 +114,30 @@
   display: grid;
   gap: 16px;
   margin-bottom: 16px;
+}
+
+@media (max-width: 992px) {
+  .summary-main-grid,
+  .chart-grid--summary {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-shell {
+    padding: 16px;
+  }
+
+  .brand-block {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .toolbar-group {
+    flex-direction: column;
+  }
+
+  .field-control select {
+    min-width: 100%;
+  }
 }
