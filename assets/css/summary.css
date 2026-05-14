@@ -7,10 +7,6 @@ body {
   font-family: Inter, Arial, sans-serif;
 }
 
-:root {
-  --map-grid-size: 38px;
-}
-
 .page-shell {
   width: 100%;
   max-width: none;
@@ -207,6 +203,7 @@ body {
 }
 
 .map-stage {
+  height: 260px;
   min-height: 260px;
   border-radius: 12px;
   background: #f8fbff;
@@ -215,46 +212,10 @@ body {
   overflow: hidden;
 }
 
-.map-canvas {
-  position: relative;
-  width: 100%;
+.leaflet-container {
   height: 260px;
-  background:
-    linear-gradient(90deg, rgba(203, 213, 225, 0.25) 1px, transparent 1px) 0 0 / var(--map-grid-size) var(--map-grid-size),
-    linear-gradient(rgba(203, 213, 225, 0.25) 1px, transparent 1px) 0 0 / var(--map-grid-size) var(--map-grid-size),
-    linear-gradient(180deg, #ffffff 0%, #eef4fb 100%);
-}
-
-.map-dot {
-  position: absolute;
-  transform: translate(-50%, -50%);
-}
-
-.map-dot--site {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  border: 1px solid #fff;
-}
-
-.map-dot--team {
-  width: 0;
-  height: 0;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  border-bottom: 9px solid #1e3a8a;
-}
-
-.map-dot--danger {
-  background: #dc2626;
-}
-
-.map-dot--warning {
-  background: #f59e0b;
-}
-
-.map-dot--success {
-  background: #16a34a;
+  width: 100%;
+  border-radius: 12px;
 }
 
 .map-fallback {
@@ -298,7 +259,7 @@ body {
 }
 
 .map-key--team {
-  border-radius: 2px;
+  border-radius: 50%;
   background: #1e3a8a;
 }
 
