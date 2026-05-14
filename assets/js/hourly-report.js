@@ -54,8 +54,8 @@ function populateHourlyFilter(elementId, values) {
   if (!select) return;
 
   var selectedValue = select.value;
-  var baseOption = select.options.length > 0 ? select.options[0].outerHTML : '';
-  select.innerHTML = baseOption;
+  var firstOption = select.options.length > 0 ? select.options[0].outerHTML : '<option value="ALL">ALL</option>';
+  select.innerHTML = firstOption;
 
   (values || []).forEach(function (value) {
     var option = document.createElement('option');
@@ -64,12 +64,11 @@ function populateHourlyFilter(elementId, values) {
     select.appendChild(option);
   });
 
-  if (
-    selectedValue &&
-    Array.from(select.options).some(function (option) {
-      return option.value === selectedValue;
-    })
-  ) {
+  var hasSelected = Array.from(select.options).some(function (option) {
+    return option.value === selectedValue;
+  });
+
+  if (hasSelected) {
     select.value = selectedValue;
   }
 }
@@ -98,16 +97,14 @@ function renderHourlyCards(rows) {
     { label: 'BACKUP', value: counters.backup, className: 'scorecard scorecard--success' }
   ];
 
-  container.innerHTML = cards
-    .map(function (card) {
-      return [
-        '<div class="' + card.className + '">',
-        '<span class="scorecard__label">' + card.label + '</span>',
-        '<strong class="scorecard__value">' + card.value + '</strong>',
-        '</div>'
-      ].join('');
-    })
-    .join('');
+  container.innerHTML = cards.map(function (card) {
+    return [
+      '<div class="' + card.className + '">',
+      '<span class="scorecard__label">' + card.label + '</span>',
+      '<strong class="scorecard__value">' + card.value + '</strong>',
+      '</div>'
+    ].join('');
+  }).join('');
 }
 
 function renderHourlyTable(rows) {
@@ -117,30 +114,28 @@ function renderHourlyTable(rows) {
   var tbody = table.querySelector('tbody');
   if (!tbody) return;
 
-  tbody.innerHTML = (rows || [])
-    .map(function (row) {
-      return [
-        '<tr>',
-        '<td>' + safeCell(row.siteId) + '</td>',
-        '<td>' + safeCell(row.siteName) + '</td>',
-        '<td>' + safeCell(row.nop) + '</td>',
-        '<td>' + safeCell(row.to) + '</td>',
-        '<td>' + safeCell(row.siteClass) + '</td>',
-        '<td>' + safeCell(row.tp) + '</td>',
-        '<td>' + renderStatusBadge(row.neStatus) + '</td>',
-        '<td>' + safeCell(row.severity) + '</td>',
-        '<td>' + renderMbpBadge(row.mbpStatus) + '</td>',
-        '<td>' + safeCell(row.responsible) + '</td>',
-        '<td>' + safeCell(row.alarmStart) + '</td>',
-        '<td>' + safeCell(row.duration) + '</td>',
-        '<td>' + safeCell(row.remark) + '</td>',
-        '<td>' + safeCell(row.jarakEta) + '</td>',
-        '<td>' + safeCell(row.kabupaten) + '</td>',
-        '<td>' + safeCell(row.pic) + '</td>',
-        '</tr>'
-      ].join('');
-    })
-    .join('');
+  tbody.innerHTML = (rows || []).map(function (row) {
+    return [
+      '<tr>',
+      '<td>' + safeCell(row.siteId) + '</td>',
+      '<td>' + safeCell(row.siteName) + '</td>',
+      '<td>' + safeCell(row.nop) + '</td>',
+      '<td>' + safeCell(row.to) + '</td>',
+      '<td>' + safeCell(row.siteClass) + '</td>',
+      '<td>' + safeCell(row.tp) + '</td>',
+      '<td>' + renderStatusBadge(row.neStatus) + '</td>',
+      '<td>' + safeCell(row.severity) + '</td>',
+      '<td>' + renderMbpBadge(row.mbpStatus) + '</td>',
+      '<td>' + safeCell(row.responsible) + '</td>',
+      '<td>' + safeCell(row.alarmStart) + '</td>',
+      '<td>' + safeCell(row.duration) + '</td>',
+      '<td>' + safeCell(row.remark) + '</td>',
+      '<td>' + safeCell(row.jarakEta) + '</td>',
+      '<td>' + safeCell(row.kabupaten) + '</td>',
+      '<td>' + safeCell(row.pic) + '</td>',
+      '</tr>'
+    ].join('');
+  }).join('');
 }
 
 function renderStatusBadge(value) {
@@ -148,8 +143,8 @@ function renderStatusBadge(value) {
   var className = 'hourly-badge hourly-badge--info';
 
   if (text === 'UP') className = 'hourly-badge hourly-badge--success';
-  if (text === 'Mains Fail') className = 'hourly-badge hourly-badge--warning';
-  if (text === 'Down') className = 'hourly-badge hourly-badge--danger';
+  else if (text === 'Mains Fail') className = 'hourly-badge hourly-badge--warning';
+  else if (text === 'Down') className = 'hourly-badge hourly-badge--danger';
 
   return '<span class="' + className + '">' + text + '</span>';
 }
@@ -159,9 +154,9 @@ function renderMbpBadge(value) {
   var className = 'hourly-badge hourly-badge--info';
 
   if (text === 'Standby') className = 'hourly-badge hourly-badge--info';
-  if (text === 'OTW') className = 'hourly-badge hourly-badge--warning';
-  if (text === 'Backup') className = 'hourly-badge hourly-badge--success';
-  if (text === 'LOS') className = 'hourly-badge hourly-badge--danger';
+  else if (text === 'OTW') className = 'hourly-badge hourly-badge--warning';
+  else if (text === 'Backup') className = 'hourly-badge hourly-badge--success';
+  else if (text === 'LOS') className = 'hourly-badge hourly-badge--danger';
 
   return '<span class="' + className + '">' + text + '</span>';
 }
