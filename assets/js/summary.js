@@ -1,9 +1,13 @@
+var summaryFiltersBound = false;
+
 document.addEventListener('DOMContentLoaded', async function () {
   bindSummaryFilters();
   await loadSummary();
 });
 
 function bindSummaryFilters() {
+  if (summaryFiltersBound) return;
+
   ['summaryFilterNop', 'summaryFilterResponsible', 'summaryFilterClass'].forEach(function (id) {
     var element = document.getElementById(id);
     if (!element) return;
@@ -11,6 +15,8 @@ function bindSummaryFilters() {
       loadSummary();
     });
   });
+
+  summaryFiltersBound = true;
 }
 
 async function loadSummary() {
@@ -22,7 +28,17 @@ async function loadSummary() {
     siteClass: getFilterValue('summaryFilterClass')
   };
 
-  var response = await window.OMCApi.getSummaryData(params);
+  var response;
+  try {
+    response = await window.OMCApi.getSummaryData(params);
+  } catch (error) {
+    console.error('Summary request error:', error);
+    setSummaryState('Failed to load summary data. Please refresh the page.', 'error');
+    renderScorecards('statusCards', []);
+    renderScorecards('classCards', []);
+    renderSummaryTable([]);
+    return;
+  }
 
   if (!response.success) {
     console.error('Failed to load summary data:', response.message);

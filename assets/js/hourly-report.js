@@ -1,9 +1,13 @@
+var hourlyFiltersBound = false;
+
 document.addEventListener('DOMContentLoaded', async function () {
   bindHourlyFilters();
   await loadHourlyReport();
 });
 
 function bindHourlyFilters() {
+  if (hourlyFiltersBound) return;
+
   ['hourlyFilterNop', 'hourlyFilterResponsible', 'hourlyFilterClass', 'hourlyFilterNeStatus'].forEach(function (id) {
     var element = document.getElementById(id);
     if (!element) return;
@@ -11,6 +15,8 @@ function bindHourlyFilters() {
       loadHourlyReport();
     });
   });
+
+  hourlyFiltersBound = true;
 }
 
 async function loadHourlyReport() {
@@ -23,7 +29,16 @@ async function loadHourlyReport() {
     neStatus: getFilterValue('hourlyFilterNeStatus')
   };
 
-  var response = await window.OMCApi.getHourlyReportData(params);
+  var response;
+  try {
+    response = await window.OMCApi.getHourlyReportData(params);
+  } catch (error) {
+    console.error('Hourly request error:', error);
+    setHourlyState('Failed to load hourly report. Please refresh the page.', 'error');
+    renderHourlyCards([]);
+    renderHourlyTable([]);
+    return;
+  }
 
   if (!response.success) {
     console.error('Failed to load hourly report:', response.message);
