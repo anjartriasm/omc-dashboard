@@ -7,6 +7,10 @@ body {
   font-family: Inter, Arial, sans-serif;
 }
 
+:root {
+  --summary-map-height: 260px;
+}
+
 .page-shell {
   width: 100%;
   max-width: none;
@@ -203,8 +207,8 @@ body {
 }
 
 .map-stage {
-  height: 260px;
-  min-height: 260px;
+  height: var(--summary-map-height);
+  min-height: var(--summary-map-height);
   border-radius: 12px;
   background: #f8fbff;
   border: 1px solid #cbd5e1;
@@ -213,7 +217,7 @@ body {
 }
 
 .leaflet-container {
-  height: 260px;
+  height: var(--summary-map-height);
   width: 100%;
   border-radius: 12px;
 }

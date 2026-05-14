@@ -108,12 +108,12 @@ window.OMCMap = {
 function ensureMap(element) {
   if (summaryLeafletMap) return;
   summaryLeafletMap = window.L.map(element, {
-    zoomControl: true,
-    attributionControl: false
+    zoomControl: true
   });
 
   window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19
+    maxZoom: 19,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(summaryLeafletMap);
 
   summaryLeafletLayer = window.L.layerGroup().addTo(summaryLeafletMap);
