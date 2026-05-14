@@ -1,5 +1,5 @@
 var hourlyFiltersBound = false;
-var HOURLY_ROWS_PER_PAGE = 20;
+var hourlyRowsPerPage = 20;
 var hourlyCurrentPage = 1;
 var hourlyRowsCache = [];
 var hourlyShowAllRows = false;
@@ -196,9 +196,10 @@ function renderHourlyTable(rows) {
   var totalRows = rows.length;
   var totalPages = getTotalPages(totalRows);
   if (hourlyCurrentPage > totalPages) hourlyCurrentPage = totalPages;
+  if (hourlyCurrentPage < 1) hourlyCurrentPage = 1;
 
-  var rowsPerPage = hourlyShowAllRows ? totalRows : HOURLY_ROWS_PER_PAGE;
-  var startIndex = hourlyShowAllRows ? 0 : (hourlyCurrentPage - 1) * HOURLY_ROWS_PER_PAGE;
+  var rowsPerPage = hourlyShowAllRows ? totalRows : hourlyRowsPerPage;
+  var startIndex = hourlyShowAllRows ? 0 : (hourlyCurrentPage - 1) * hourlyRowsPerPage;
   var endIndex = Math.min(startIndex + rowsPerPage, totalRows);
   var pageRows = rows.slice(startIndex, endIndex);
 
@@ -253,8 +254,8 @@ function updatePagination(startIndex, endIndex, totalRows, totalPages) {
 }
 
 function getTotalPages(totalRows) {
-  if (!totalRows) return 1;
-  return Math.max(1, Math.ceil(totalRows / HOURLY_ROWS_PER_PAGE));
+  if (!Number.isFinite(totalRows) || totalRows <= 0) return 0;
+  return Math.ceil(totalRows / hourlyRowsPerPage);
 }
 
 function renderStatusBadge(value) {

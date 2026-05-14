@@ -7,6 +7,10 @@ body {
   font-family: Inter, Arial, sans-serif;
 }
 
+:root {
+  --hourly-table-viewport-offset: 245px;
+}
+
 .hourly-shell {
   width: 100%;
   max-width: none;
@@ -83,7 +87,7 @@ body {
 .table-wrapper--hourly {
   overflow-x: auto;
   overflow-y: auto;
-  max-height: calc(100vh - 245px);
+  max-height: calc(100vh - var(--hourly-table-viewport-offset));
   border-radius: 10px;
   background: #fff;
 }
@@ -105,6 +109,7 @@ body {
   font-size: 0.7rem;
   white-space: nowrap;
   padding: 6px 8px;
+  vertical-align: middle;
 }
 
 #hourlyTable td {
@@ -126,8 +131,8 @@ body {
   min-width: 170px;
 }
 
-.hourly-remark-cell {
-  white-space: normal !important;
+#hourlyTable td.hourly-remark-cell {
+  white-space: normal;
   min-width: 220px;
   max-width: 290px;
   word-break: break-word;

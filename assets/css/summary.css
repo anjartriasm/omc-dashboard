@@ -7,6 +7,10 @@ body {
   font-family: Inter, Arial, sans-serif;
 }
 
+:root {
+  --map-grid-size: 38px;
+}
+
 .page-shell {
   width: 100%;
   max-width: none;
@@ -216,8 +220,8 @@ body {
   width: 100%;
   height: 260px;
   background:
-    linear-gradient(90deg, rgba(203, 213, 225, 0.25) 1px, transparent 1px) 0 0 / 38px 38px,
-    linear-gradient(rgba(203, 213, 225, 0.25) 1px, transparent 1px) 0 0 / 38px 38px,
+    linear-gradient(90deg, rgba(203, 213, 225, 0.25) 1px, transparent 1px) 0 0 / var(--map-grid-size) var(--map-grid-size),
+    linear-gradient(rgba(203, 213, 225, 0.25) 1px, transparent 1px) 0 0 / var(--map-grid-size) var(--map-grid-size),
     linear-gradient(180deg, #ffffff 0%, #eef4fb 100%);
 }
 

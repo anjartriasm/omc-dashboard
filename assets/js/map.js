@@ -1,3 +1,6 @@
+var MAX_SITE_POINTS = 120;
+var MAX_TEAM_POINTS = 80;
+
 window.OMCMap = {
   renderPlaceholder(rows) {
     var element = document.getElementById('summaryMap');
@@ -42,8 +45,8 @@ window.OMCMap = {
     );
 
     var bounds = getBounds(combined);
-    var maxSitePoints = sitePoints.slice(0, 120);
-    var maxTeamPoints = teamPoints.slice(0, 80);
+    var maxSitePoints = sitePoints.slice(0, MAX_SITE_POINTS);
+    var maxTeamPoints = teamPoints.slice(0, MAX_TEAM_POINTS);
 
     element.innerHTML = [
       '<div class="map-canvas" role="img" aria-label="Site and team points map">',

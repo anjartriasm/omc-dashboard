@@ -1,3 +1,5 @@
+var MIN_BAR_WIDTH_PERCENT = 6;
+
 window.OMCCharts = {
   renderPlaceholder(elementId, title, data) {
     var element = document.getElementById(elementId);
@@ -39,7 +41,7 @@ window.OMCCharts = {
     }
 
     element.innerHTML = selectedEntries.map(function (entry) {
-      var width = maxValue > 0 ? Math.max(6, Math.round((entry[1] / maxValue) * 100)) : 0;
+      var width = maxValue > 0 ? Math.max(MIN_BAR_WIDTH_PERCENT, Math.round((entry[1] / maxValue) * 100)) : 0;
       return [
         '<div class="metric-row">',
         '<div class="metric-row__top">',
@@ -54,7 +56,8 @@ window.OMCCharts = {
 };
 
 function escapeHtml(value) {
-  return String(value)
+  var safeValue = value === null || value === undefined ? '' : value;
+  return String(safeValue)
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
