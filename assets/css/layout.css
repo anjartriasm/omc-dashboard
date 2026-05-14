@@ -53,8 +53,44 @@
   object-fit: contain;
 }
 
+.logo-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  color: var(--color-brand-primary);
+  background: var(--color-bg-muted);
+  border: 1px solid var(--color-border);
+}
+
 .toolbar {
   margin-bottom: 16px;
+}
+
+.page-nav {
+  display: inline-flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 6px;
+  border-radius: var(--radius-md);
+  background: var(--color-bg-muted);
+}
+
+.page-nav__link {
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  color: var(--color-text-secondary);
+}
+
+.page-nav__link--active {
+  color: var(--color-text-inverse);
+  background: var(--color-brand-primary);
 }
 
 .toolbar-group {
@@ -135,6 +171,10 @@
 
   .toolbar-group {
     flex-direction: column;
+  }
+
+  .page-nav {
+    width: 100%;
   }
 
   .field-control select {

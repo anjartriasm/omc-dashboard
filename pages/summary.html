@@ -23,11 +23,15 @@
             </div>
           </div>
           <div class="brand-logos">
-            <img src="../assets/images/logos/telkomsel.png" alt="Telkomsel" />
-            <img src="../assets/images/logos/telkominfra.png" alt="Telkominfra" />
+            <span class="logo-chip">Telkomsel</span>
+            <span class="logo-chip">Telkominfra</span>
           </div>
         </div>
       </header>
+      <nav class="page-nav" aria-label="Dashboard pages">
+        <a class="page-nav__link page-nav__link--active" href="./summary.html" aria-current="page">Summary</a>
+        <a class="page-nav__link" href="./hourly-report.html">Hourly Report</a>
+      </nav>
 
       <section class="toolbar toolbar--summary">
         <div class="toolbar-group" id="summaryFilters">
@@ -51,6 +55,8 @@
           </label>
         </div>
       </section>
+
+      <div class="ui-state is-hidden" id="summaryState" aria-live="polite"></div>
 
       <section class="section-block">
         <div class="scorecard-panel">
